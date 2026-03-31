@@ -29,23 +29,45 @@ public class GuiHandler extends JFrame {
         ));
 
         JButton goButton = new JButton("Analyze");
-        goButton.addActionListener(e -> {
-            keyWords = textFileGrabber.ReadFileKeyWords(stopWordFileGrabber.ReadFileAsStopWords());
-            for(String key : keyWords.keySet()){
-                textArea.append(key + " " + keyWords.get(key) + "\n");
-            }
-        });
+        goButton.addActionListener(e -> {OnAnalyze();});
+
+        JButton saveButton = new JButton("Save Analysis");
+        saveButton.addActionListener(e -> {OnSave();});
+
+
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new Dimension(500, 300));
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         centralPanel.add(goButton);
+        centralPanel.add(saveButton);
         centralPanel.add(scrollPane);
         textArea.setEditable(false);
 
         this.add(centralPanel);
     }
 
+    private void OnAnalyze(){
+        textArea.setText("");
+        if(textFileGrabber.GetFile() == null || stopWordFileGrabber.GetFile() == null){
+            JOptionPane.showMessageDialog(null, "Please select a file!");
+        }
+        else{
+            keyWords = textFileGrabber.ReadFileKeyWords(stopWordFileGrabber.ReadFileAsStopWords());
+            for(String key : keyWords.keySet()){
+                textArea.append(key + " " + keyWords.get(key) + "\n");
+            }
+        }
+    }
+    private void OnSave(){
+        if(keyWords.size() > 0){
+            FileSaver fileSaver = new FileSaver();
+            fileSaver.SaveFile(keyWords);
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "No analysis to save!");
+        }
+    }
 
     private JPanel CreateFileInputArea(FileGrabber fileGrabber,JButton button, JTextField textField, String label){
         JPanel panel = new JPanel();
